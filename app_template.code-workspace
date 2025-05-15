@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "apps/frontend"
+		},
+		{
+			"path": "apps/services"
 		}
 	],
 	"settings": {}
