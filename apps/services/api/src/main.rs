@@ -1,10 +1,9 @@
-use std::sync::Arc;
-
 use axum::{
     http::StatusCode, routing::{get, post}, Extension, Json, Router
 };
 use common::config::Config;
 use serde::{Deserialize, Serialize};
+use sqlx::{FromRow, PgPool};
 
 #[tokio::main]
 async fn main() {
@@ -19,16 +18,25 @@ async fn main() {
         .route("/", get(root))
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user))
-        .layer(Extension(Arc::new(pg_pool)));
+        .layer(Extension(pg_pool));
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
 
+#[derive(FromRow)]
+struct MyType{
+    sum: i32,
+}
+
 // basic handler that responds with a static string
-async fn root() -> &'static str {
-    "Hello, World!"
+async fn root(Extension(pg_pool): Extension<PgPool>,) -> String {
+    let res: MyType = sqlx::query_as("SELECT 1 + 1 AS sum")
+        .fetch_one(&pg_pool)
+        .await
+        .unwrap();
+    format!("Hello, World! The sum is: {}", res.sum)
 }
 
 async fn create_user(

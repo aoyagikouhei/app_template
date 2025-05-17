@@ -35,7 +35,7 @@ services:
       REDIS__POOL__TIMEOUTS__WAIT__SECS: 2
       REDIS__POOL__TIMEOUTS__WAIT__NANOS: 0
     volumes:
-      - ../apps/service:/app
+      - ../apps/services:/app
       - cargo_cache:/usr/local/cargo/registry
       - target_cache:/tmp/target
     tty: true
