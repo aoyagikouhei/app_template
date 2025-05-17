@@ -23,13 +23,13 @@ services:
       RUST_BACKTRACE: 1
       RUST_TEST_THREADS: 1
       CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
-      PG__HOST: postgres
-      PG__USER: user
-      PG__PASSWORD: pass
-      PG__DBNAME: web
-      PG__POOL__MAX_SIZE: 16
-      PG__POOL__TIMEOUTS__WAIT__SECS: 5
-      PG__POOL__TIMEOUTS__WAIT__NANOS: 0
+      PGHOST: postgres
+      PGUSER: user
+      PGPASSWORD: pass
+      PGDATABASE: web
+      MAX_CONNECTIONS: 10
+      ACQUIRE_TIMEOUT: 300
+      IDLE_TIMEOUT: 600
       REDIS__URL: redis://valkey
       REDIS__POOL__MAX_SIZE: 16
       REDIS__POOL__TIMEOUTS__WAIT__SECS: 2

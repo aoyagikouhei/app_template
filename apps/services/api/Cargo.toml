@@ -5,6 +5,10 @@ edition = "2024"
 
 [dependencies]
 axum = { workspace = true }
+common = { path = "../crates/common" }
+logs = { path = "../crates/logs" }
 openidconnect = { workspace = true }
+serde = { workspace = true }
+sqlx = { workspace = true }
 tokio = { workspace = true }
 
