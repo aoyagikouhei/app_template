@@ -78,6 +78,10 @@ atmp_command() {
             ;;
 
         # 独自の実装
+        typespec)
+            subcommand_script=$commands/typespec.sh
+            ;;
+
 
         # Help
         help)
@@ -135,6 +139,7 @@ Commands:
         restart SERVICE             特定のサービスを再起動する。
         log [-f] [SERVICE]          ログを出力する。
         url SERVICE                 指定したサービスへアクセスするURLを出力する。
+        typespec                    Typespecのコード生成
 
 END
 }
