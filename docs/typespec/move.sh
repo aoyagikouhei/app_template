@@ -10,6 +10,10 @@ function copy_move() {
     cp -r $1/* $2
 }
 
+rm -rf ./tsp-output/clients
+
+tsp compile .
+
 SRCDIR=./tsp-output/clients/js/src/api
 DSTDIR=../../apps/frontend/src/api
 copy_move $SRCDIR $DSTDIR
@@ -22,3 +26,4 @@ SRCDIR=./tsp-output/clients/js/src/models
 DSTDIR=../../apps/frontend/src/models
 copy_move $SRCDIR $DSTDIR
 
+cp ./tsp-output/clients/js/src/templateServiceClient.ts ../../apps/frontend/src/templateServiceClient.ts
