@@ -11,33 +11,47 @@ pub struct Config {
     pub acquire_timeout: u64,
     pub idle_timeout: u64,
     pub pg_password: String,
+    pub login_client_id: String,
+    pub login_client_secret: String,
+    pub login_callback_url: String,
 }
 
 static INSTANCE: OnceLock<Config> = OnceLock::new();
 
+fn get_string_value(key: &str, default: &str) -> String {
+    std::env::var(key).unwrap_or_else(|_| default.to_string())
+}
+
+fn get_value<T>(key: &str, default: T) -> T 
+where 
+    T: std::str::FromStr,
+{
+    match std::env::var(key) {
+        Ok(value) => value.parse::<T>().unwrap_or(default),
+        Err(_) => default,
+    }
+}
+
+
 impl Config {
     pub fn new() -> Self {
         dotenv::dotenv().ok();
-        let max_connections = std::env::var("MAX_CONNECTIONS")
-            .unwrap_or_else(|_| "10".to_string())
-            .parse()
-            .unwrap_or(10);
-        let acquire_timeout = std::env::var("ACQUIRE_TIMEOUT")
-            .unwrap_or_else(|_| "300".to_string())
-            .parse()
-            .unwrap_or(300);
-        let idle_timeout = std::env::var("IDLE_TIMEOUT")
-            .unwrap_or_else(|_| "600".to_string())
-            .parse()
-            .unwrap_or(600);
-        // TODO SSM
-        let pg_password = std::env::var("PGPASSWORD")
-            .unwrap_or_else(|_| "pass".to_string());
+        let max_connections = get_value("MAX_CONNECTIONS", 10);
+        let acquire_timeout = get_value("ACQUIRE_TIMEOUT", 300);
+        let idle_timeout = get_value("IDLE_TIMEOUT", 600);
+        let pg_password = get_string_value("PGPASSWORD", "pass");
+        let login_client_id = get_string_value("LOGIN_CLIENT_ID", "client_id");
+        let login_client_secret = get_string_value("LOGIN_CLIENT_SECRET", "client_secret");
+        let login_callback_url = get_string_value("LOGIN_CALLBACK_URL", "http://localhost:8080/callback");
+        
         Self {
             max_connections,
             acquire_timeout,
             idle_timeout,
             pg_password,
+            login_client_id,
+            login_client_secret,
+            login_callback_url,
         }    
     }
 
