@@ -4,6 +4,11 @@ import { ref } from 'vue'
 defineProps<{ msg: string }>()
 
 const count = ref(0)
+
+const login = () => {
+  console.log('Login button clicked')
+  // ログイン処理を実装
+}
 </script>
 
 <template>
@@ -15,6 +20,10 @@ const count = ref(0)
       Edit
       <code>components/HelloWorld.vue</code> to test HMR
     </p>
+  </div>
+
+  <div class="login-container">
+    <button type="button" @click="login" class="login-button">ログイン</button>
   </div>
 
   <p>
@@ -37,5 +46,23 @@ const count = ref(0)
 <style scoped>
 .read-the-docs {
   color: #888;
+}
+
+.login-container {
+  margin: 20px 0;
+}
+
+.login-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.login-button:hover {
+  background-color: #45a049;
 }
 </style>
