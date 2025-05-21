@@ -1,9 +1,23 @@
+use std::sync::Arc;
+
 use axum::{
-    http::StatusCode, routing::{get, post}, Extension, Json, Router
+    Extension, Json, Router,
+    http::StatusCode,
+    routing::{delete, get, post},
 };
 use common::config::Config;
+use google_login::Oauth2Client;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
+use tower_sessions::{MemoryStore, SessionManagerLayer};
+
+pub mod controllers;
+pub mod error;
+
+pub struct AppState {
+    pub pg_pool: PgPool,
+    pub oauth2_client: Oauth2Client,
+}
 
 #[tokio::main]
 async fn main() {
@@ -11,6 +25,23 @@ async fn main() {
     logs::setup_tracing("api");
     let config = Config::setup();
     let pg_pool = config.pg_pool().await.unwrap();
+    let oauth2_client = Oauth2Client::new(
+        &config.login_client_id,
+        &config.login_client_secret,
+        &config.login_callback_url,
+    );
+    let app_state = Arc::new(AppState {
+        pg_pool,
+        oauth2_client,
+    });
+
+    // セッションの準備
+    let secret = "1234567812345678123456781234567812345678123456781234567812345678";
+    let key = tower_sessions::cookie::Key::from(secret.as_bytes());
+    let session_store = MemoryStore::default();
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_secure(false)
+        .with_private(key);
 
     // build our application with a route
     let app = Router::new()
@@ -18,7 +49,12 @@ async fn main() {
         .route("/", get(root))
         // `POST /users` goes to `create_user`
         .route("/users", post(create_user))
-        .layer(Extension(pg_pool));
+        .route("/logins", get(controllers::logins::new::execute))
+        .route("/logins", post(controllers::logins::create::execute))
+        .route("/logins", delete(controllers::logins::delete::execute))
+        .with_state(app_state)
+        // セッション設定
+        .layer(session_layer);
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
@@ -26,12 +62,12 @@ async fn main() {
 }
 
 #[derive(FromRow)]
-struct MyType{
+struct MyType {
     sum: i32,
 }
 
 // basic handler that responds with a static string
-async fn root(Extension(pg_pool): Extension<PgPool>,) -> String {
+async fn root(Extension(pg_pool): Extension<PgPool>) -> String {
     let res: MyType = sqlx::query_as("SELECT 1 + 1 AS sum")
         .fetch_one(&pg_pool)
         .await

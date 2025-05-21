@@ -55,7 +55,7 @@ model OAuthResult {
   status: string;
 }
 
-@route("/login")
+@route("/logins")
 @tag("Login")
 interface Login {
   /** Login */

@@ -1,7 +1,11 @@
 use std::time::Duration;
 
-use oauth2::{basic::BasicClient, reqwest, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope, TokenResponse, TokenUrl};
 use error::GoogleLoginError;
+use oauth2::{
+    AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope,
+    TokenResponse, TokenUrl, basic::BasicClient, reqwest,
+};
+use serde::{Deserialize, Serialize};
 
 pub mod error;
 
@@ -20,7 +24,6 @@ pub struct OAuth2UrlResult {
     pub pkce_verifier: String,
 }
 
-
 #[derive(Debug, Clone)]
 pub struct TokenResult {
     pub access_token: String,
@@ -29,12 +32,13 @@ pub struct TokenResult {
 }
 
 impl Oauth2Client {
-    pub fn new(client_id: String, client_secret: String, redirect_uri: String) -> Self {
-        let client_id = ClientId::new(client_id);
-        let client_secret = ClientSecret::new(client_secret);
-        let auth_url = AuthUrl::new("https://accounts.google.com/o/oauth2/auth".to_string()).unwrap();
+    pub fn new(client_id: &str, client_secret: &str, redirect_uri: &str) -> Self {
+        let client_id = ClientId::new(client_id.to_owned());
+        let client_secret = ClientSecret::new(client_secret.to_owned());
+        let auth_url =
+            AuthUrl::new("https://accounts.google.com/o/oauth2/auth".to_string()).unwrap();
         let token_url = TokenUrl::new("https://oauth2.googleapis.com/token".to_string()).unwrap();
-        let redirect_url = RedirectUrl::new(redirect_uri).unwrap();
+        let redirect_url = RedirectUrl::new(redirect_uri.to_owned()).unwrap();
         let scopes = vec![
             Scope::new("https://www.googleapis.com/auth/userinfo.email".to_string()),
             Scope::new("https://www.googleapis.com/auth/userinfo.profile".to_string()),
@@ -88,8 +92,8 @@ impl Oauth2Client {
             .set_auth_uri(self.auth_url.clone())
             .set_token_uri(self.token_url.clone());
 
-        let http_client =
-            reqwest::ClientBuilder::new().redirect(reqwest::redirect::Policy::none())
+        let http_client = reqwest::ClientBuilder::new()
+            .redirect(reqwest::redirect::Policy::none())
             .timeout(timeout)
             .build()?;
 
@@ -107,4 +111,29 @@ impl Oauth2Client {
             expires_in: token.expires_in(),
         })
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UserInfo {
+    pub email: String,
+    pub id: String,
+    pub name: Option<String>,
+    pub family_name: Option<String>,
+    pub given_name: Option<String>,
+    pub hd: Option<String>,
+    pub locale: Option<String>,
+    pub picture: Option<String>,
+    pub verified_email: Option<bool>,
+}
+
+const USER_INFO_URL: &str = "https://www.googleapis.com/oauth2/v1/userinfo";
+pub async fn request_user_info(
+    token: &str,
+    timeout: Duration,
+) -> Result<UserInfo, GoogleLoginError> {
+    let client = reqwest::ClientBuilder::new().timeout(timeout).build()?;
+    let builder = client.get(USER_INFO_URL).bearer_auth(token);
+    let response = builder.send().await?;
+    let body = response.text().await?;
+    Ok(serde_json::from_str(&body)?)
 }

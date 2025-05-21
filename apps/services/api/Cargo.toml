@@ -7,7 +7,11 @@ edition = "2024"
 axum = { workspace = true }
 common = { path = "../crates/common" }
 logs = { path = "../crates/logs" }
+google_login = { path = "../crates/google_login" }
 serde = { workspace = true }
+serde_json = { workspace = true }
 sqlx = { workspace = true }
+thiserror = { workspace = true }
 tokio = { workspace = true }
+tower-sessions = { workspace = true }
 

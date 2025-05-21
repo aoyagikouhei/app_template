@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{postgres::{PgConnectOptions, PgPoolOptions}, PgPool};
+use sqlx::{
+    PgPool,
+    postgres::{PgConnectOptions, PgPoolOptions},
+};
 use std::{sync::OnceLock, time::Duration};
 
 // PG Parameters
@@ -22,8 +25,8 @@ fn get_string_value(key: &str, default: &str) -> String {
     std::env::var(key).unwrap_or_else(|_| default.to_string())
 }
 
-fn get_value<T>(key: &str, default: T) -> T 
-where 
+fn get_value<T>(key: &str, default: T) -> T
+where
     T: std::str::FromStr,
 {
     match std::env::var(key) {
@@ -31,7 +34,6 @@ where
         Err(_) => default,
     }
 }
-
 
 impl Config {
     pub fn new() -> Self {
@@ -42,8 +44,9 @@ impl Config {
         let pg_password = get_string_value("PGPASSWORD", "pass");
         let login_client_id = get_string_value("LOGIN_CLIENT_ID", "client_id");
         let login_client_secret = get_string_value("LOGIN_CLIENT_SECRET", "client_secret");
-        let login_callback_url = get_string_value("LOGIN_CALLBACK_URL", "http://localhost:8080/callback");
-        
+        let login_callback_url =
+            get_string_value("LOGIN_CALLBACK_URL", "http://localhost:8080/callback");
+
         Self {
             max_connections,
             acquire_timeout,
@@ -52,13 +55,11 @@ impl Config {
             login_client_id,
             login_client_secret,
             login_callback_url,
-        }    
+        }
     }
 
     pub async fn pg_pool(&self) -> Result<PgPool, sqlx::Error> {
-        let connect_options = PgConnectOptions::new_without_pgpass()
-            .password(&self.pg_password)
-        ;
+        let connect_options = PgConnectOptions::new_without_pgpass().password(&self.pg_password);
         PgPoolOptions::new()
             .max_connections(self.max_connections)
             .acquire_timeout(Duration::from_secs(self.acquire_timeout))
