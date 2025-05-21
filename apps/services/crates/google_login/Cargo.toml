@@ -1,0 +1,8 @@
+[package]
+name = "google_login"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+oauth2 = { workspace = true }
+thiserror = { workspace = true }
