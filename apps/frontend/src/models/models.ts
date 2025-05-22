@@ -22,6 +22,10 @@ export interface AnalyzeResult {
   analysis: string;
 }
 export interface OAuthLogin {
+  data: OAuthLoginData
+  resultCode: string;
+}
+export interface OAuthLoginData {
   url: string;
 }
 export interface OAuthResult {

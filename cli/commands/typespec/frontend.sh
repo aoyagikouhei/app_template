@@ -1,7 +1,7 @@
-/bin/bash
+#!/bin/bash
 
 frontend() {
-    cd $project_root/docs/typespec
+    cd $REPOSITORY_ROOT/docs/typespec
     ./move.sh
 }
 

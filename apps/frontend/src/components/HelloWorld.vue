@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { createLoginClientContext } from '../api/loginClient/loginClientContext'
+import { login as loginOperation } from '../api/loginClient/loginClientOperations'
 
 defineProps<{ msg: string }>()
 
 const count = ref(0)
 
-const login = () => {
-  console.log('Login button clicked')
-  // ログイン処理を実装
+const login = async () => {
+  try {
+    console.log('Login button clicked')
+    const client = createLoginClientContext("http://localhost:3000/", {allowInsecureConnection: true})
+    const result = await loginOperation(client)
+    console.log('Login result:', result)
+  } catch (error) {
+    console.error('Login error:', error)
+  }
 }
 </script>
 

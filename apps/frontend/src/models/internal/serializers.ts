@@ -1,4 +1,4 @@
-import { AnalyzeResult, MergePatchUpdate, OAuthLogin, OAuthResult, PlainResult, Widget, WidgetList } from "../models.js";
+import { AnalyzeResult, MergePatchUpdate, OAuthLogin, OAuthLoginData, OAuthResult, PlainResult, Widget, WidgetList } from "../models.js";
 
 export function decodeBase64(value: string): Uint8Array | undefined {
   if(!value) {
@@ -162,11 +162,29 @@ export function decodeBase64(value: string): Uint8Array | undefined {
     return input_ as any;
   }
     return {
-    url: input_.url
+    data: jsonOAuthLoginDataToTransportTransform(input_.data),result_code: input_.resultCode
   }!;
 }export function jsonOAuthLoginToApplicationTransform(
   input_?: any,
 ): OAuthLogin {
+  if(!input_) {
+    return input_ as any;
+  }
+    return {
+    data: jsonOAuthLoginDataToApplicationTransform(input_.data),resultCode: input_.result_code
+  }!;
+}export function jsonOAuthLoginDataToTransportTransform(
+  input_?: OAuthLoginData | null,
+): any {
+  if(!input_) {
+    return input_ as any;
+  }
+    return {
+    url: input_.url
+  }!;
+}export function jsonOAuthLoginDataToApplicationTransform(
+  input_?: any,
+): OAuthLoginData {
   if(!input_) {
     return input_ as any;
   }

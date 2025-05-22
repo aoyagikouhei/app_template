@@ -12,7 +12,7 @@ export async function login(
   client: LoginClientContext,
   options?: LoginOptions,
 ): Promise<OAuthLogin> {
-  const path = parse("/login").expand({
+  const path = parse("/logins").expand({
 
   });
   const httpRequestOptions = {
@@ -40,7 +40,7 @@ export async function oauth(
   body: OAuthResult,
   options?: OauthOptions,
 ): Promise<PlainResult> {
-  const path = parse("/login").expand({
+  const path = parse("/logins").expand({
 
   });
   const httpRequestOptions = {
@@ -67,7 +67,7 @@ export async function logout(
   client: LoginClientContext,
   options?: LogoutOptions,
 ): Promise<PlainResult> {
-  const path = parse("/login").expand({
+  const path = parse("/logins").expand({
 
   });
   const httpRequestOptions = {

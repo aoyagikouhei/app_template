@@ -47,8 +47,13 @@ model PlainResult {
   result_code: string;
 }
 
-model OAuthLogin {
+model OAuthLoginData {
   url: string;
+}
+
+model OAuthLogin {
+  data: OAuthLoginData;
+  result_code: string;
 }
 
 model OAuthResult {
