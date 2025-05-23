@@ -1,14 +1,13 @@
 use std::sync::Arc;
 
 use axum::{
-    Extension, Json, Router,
-    http::StatusCode,
-    routing::{delete, get, post},
+    http::{Method, StatusCode}, routing::{delete, get, post}, Extension, Json, Router
 };
 use common::config::Config;
 use google_login::Oauth2Client;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
+use tower_http::cors::{AllowHeaders, AllowOrigin, CorsLayer};
 use tower_sessions::{MemoryStore, SessionManagerLayer};
 
 pub mod controllers;
@@ -43,6 +42,13 @@ async fn main() {
         .with_secure(false)
         .with_private(key);
 
+    // CORS
+    let cors_layer = CorsLayer::new()
+        .allow_credentials(true)
+        .allow_origin(AllowOrigin::mirror_request())
+        .allow_methods([Method::GET, Method::POST, Method::DELETE])
+        .allow_headers(AllowHeaders::mirror_request());
+
     // build our application with a route
     let app = Router::new()
         // `GET /` goes to `root`
@@ -53,7 +59,7 @@ async fn main() {
         .route("/logins", post(controllers::logins::create::execute))
         .route("/logins", delete(controllers::logins::delete::execute))
         .with_state(app_state)
-        // セッション設定
+        .layer(cors_layer)
         .layer(session_layer);
 
     // run our app with hyper, listening globally on port 3000
