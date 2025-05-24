@@ -29,7 +29,8 @@ export interface OAuthLoginData {
   url: string;
 }
 export interface OAuthResult {
-  status: string;
+  code: string
+  state: string;
 }
 export interface PlainResult {
   resultCode: string;

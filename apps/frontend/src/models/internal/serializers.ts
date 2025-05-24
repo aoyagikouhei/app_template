@@ -198,7 +198,7 @@ export function decodeBase64(value: string): Uint8Array | undefined {
     return input_ as any;
   }
     return {
-    status: input_.status
+    code: input_.code,state: input_.state
   }!;
 }export function jsonOAuthResultToApplicationTransform(
   input_?: any,
@@ -207,7 +207,7 @@ export function decodeBase64(value: string): Uint8Array | undefined {
     return input_ as any;
   }
     return {
-    status: input_.status
+    code: input_.code,state: input_.state
   }!;
 }export function jsonPlainResultToTransportTransform(
   input_?: PlainResult | null,

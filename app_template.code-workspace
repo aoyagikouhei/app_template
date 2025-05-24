@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "apps/services"
+		},
+		{
+			"path": "docs/typespec"
 		}
 	],
 	"settings": {}

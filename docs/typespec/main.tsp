@@ -57,7 +57,8 @@ model OAuthLogin {
 }
 
 model OAuthResult {
-  status: string;
+  code: string;
+  state: string;
 }
 
 @route("/logins")

@@ -21,7 +21,8 @@ export async function login(
     },
   };
   const response = await client.pathUnchecked(path).get(httpRequestOptions);
-  console.log("response", response);
+
+  ;
   if (typeof options?.operationOptions?.onResponse === "function") {
     options?.operationOptions?.onResponse(response);
   }
