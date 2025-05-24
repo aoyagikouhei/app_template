@@ -10,6 +10,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { TemplateServiceClient } from '../templateServiceClient'
 import type { OAuthResult } from '../models/models'
+import { getClientOptionsWithCredentials } from '../utils/credentialsPolicy'
 
 const router = useRouter()
 const route = useRoute()
@@ -30,10 +31,13 @@ onMounted(async () => {
       state
     }
 
-    const client = new TemplateServiceClient("http://localhost:3000/", { allowInsecureConnection: true })
+    const clientOptions = getClientOptionsWithCredentials({
+      allowInsecureConnection: true
+    })
+    const client = new TemplateServiceClient("http://localhost:3000/", clientOptions)
     const result = await client.loginClient.oauth(oauthResult)
     
-    if (result.resultCode === 'OK') {
+    if (result.resultCode === 'success') {
       await router.push('/')
     } else {
       throw new Error(`OAuth failed with result code: ${result.resultCode}`)

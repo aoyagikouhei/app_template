@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { createLoginClientContext } from '../api/loginClient/loginClientContext'
 import { login as loginOperation } from '../api/loginClient/loginClientOperations'
+import { getClientOptionsWithCredentials } from '../utils/credentialsPolicy'
 
 defineProps<{ msg: string }>()
 
@@ -10,7 +11,10 @@ const count = ref(0)
 const login = async () => {
   try {
     console.log('Login button clicked')
-    const client = createLoginClientContext("http://localhost:3000/", {allowInsecureConnection: true})
+    const clientOptions = getClientOptionsWithCredentials({
+      allowInsecureConnection: true
+    })
+    const client = createLoginClientContext("http://localhost:3000/", clientOptions)
     const result = await loginOperation(client)
     console.log('Login result:', result)
     
