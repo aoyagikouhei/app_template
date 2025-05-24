@@ -10,9 +10,14 @@ pub const SESSION_USER_INFO: &str = "user_info";
 pub enum ResponseType {
     Data((String, serde_json::Value)),
     Redirect(String),
+    NoData(String),
 }
 
 impl ResponseType {
+    pub fn new_no_data(result_code: &str) -> Self {
+        Self::NoData(result_code.to_owned())
+    }
+
     pub fn new_data(result_code: &str, data: serde_json::Value) -> Self {
         Self::Data((result_code.to_owned(), data))
     }
@@ -31,6 +36,12 @@ impl ResponseType {
                 axum::Json(response).into_response()
             }
             Self::Redirect(path) => Redirect::to(path).into_response(),
+            Self::NoData(key) => {
+                let response = serde_json::json!({
+                    "result_code": key,
+                });
+                axum::Json(response).into_response()
+            }
         }
     }
 }

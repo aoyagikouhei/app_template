@@ -2,7 +2,6 @@ use std::{sync::Arc, time::Duration};
 
 use axum::{Json, extract::State, response::IntoResponse};
 use google_login::{Oauth2Client, request_user_info};
-use serde_json::json;
 use tower_sessions::Session;
 
 use crate::{
@@ -31,11 +30,16 @@ async fn inner(
         .get("code")
         .and_then(|v| v.as_str())
         .ok_or_else(|| ApiError::Invalid("Code not found".to_string()))?;
+    
+    let _state = payload
+        .get("state")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default();
 
     let res = oauth2_client
         .token(&pkce, code, Duration::from_secs(5))
         .await?;
     let user_info = request_user_info(&res.access_token, Duration::from_secs(5)).await?;
     session.insert(SESSION_USER_INFO, user_info).await?;
-    Ok(ResponseType::new_data("success", json!({})))
+    Ok(ResponseType::new_no_data("success"))
 }
