@@ -40,6 +40,7 @@ async fn inner(
         .token(&pkce, code, Duration::from_secs(5))
         .await?;
     let user_info = request_user_info(&res.access_token, Duration::from_secs(5)).await?;
+    println!("User info: {:?}", user_info);
     session.insert(SESSION_USER_INFO, user_info).await?;
     Ok(ResponseType::new_no_data("success"))
 }
