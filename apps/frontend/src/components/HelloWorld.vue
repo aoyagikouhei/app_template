@@ -13,6 +13,10 @@ const login = async () => {
     const client = createLoginClientContext("http://localhost:3000/", {allowInsecureConnection: true})
     const result = await loginOperation(client)
     console.log('Login result:', result)
+    
+    if (result.data?.url) {
+      window.location.href = result.data.url
+    }
   } catch (error) {
     console.error('Login error:', error)
   }
